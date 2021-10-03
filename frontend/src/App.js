@@ -12,15 +12,6 @@ function App() {
 
   webSocket.current = new WebSocket("ws://localhost:8001/ws");
 
-  // webSocket.current.onopen = () => {
-  //   setIsOnline(true);
-  // };
-
-  // webSocket.current.onclose = () => {
-  //   setChatHistory([]);
-  //   setIsOnline(false);
-  // };
-
   useEffect(() => {
     setTimeout(() => {
       if (webSocket.current.readyState === WebSocket.OPEN) {
@@ -30,27 +21,11 @@ function App() {
         setIsOnline(false);
         setChatHistory([]);
       }
+      webSocket.current.onmessage = msg => {
+        setChatHistory([...chatHistory, msg.data]);
+      }
     }, 5);
   }, [webSocket.current]);
-
-  // useEffect(() => {
-  //   webSocket.current.onopen = () => {
-  //     setIsOnline(true);
-  //     console.log("am i called");
-  //   };
-  //   webSocket.current.onclose = () => setIsOnline(false);
-  //   return () => webSocket.current.close();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!webSocket.current) return;
-
-  //   webSocket.current.onmessage = (e) => {
-  //     if (isPaused) return;
-  //     const message = JSON.parse(e);
-  //     console.log("e", message);
-  //   };
-  // }, [isPaused]);
 
   const sendMessage = () => {
     if (webSocket.current.readyState === WebSocket.OPEN) {
@@ -58,6 +33,8 @@ function App() {
       webSocket.current.send(textValue);
     }
   };
+
+  console.log("am i over rendering?")
 
   return (
     <>
